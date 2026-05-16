@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#13223a" />
+  <title>DRIVN Buyer Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="grain"></div>
+  <main class="shell">
+    <aside class="rail" aria-label="App navigation">
+      <div class="brand-mark">D</div>
+      <button class="rail-btn active" data-panel="catalog" title="Lots">☕</button>
+      <button class="rail-btn" data-panel="library" title="Library">✎</button>
+      <button class="rail-btn" data-panel="about" title="About">⌁</button>
+      <button class="rail-btn bottom" id="ownerToggle" title="Owner mode">⚙</button>
+    </aside>
+
+    <section class="workspace">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Driva Coffee Processing</p>
+          <h1>DRIVN Buyer Portal</h1>
+        </div>
+        <div class="search-wrap">
+          <span>⌕</span>
+          <input id="searchInput" type="search" placeholder="Search origin, process, notes..." />
+        </div>
+        <div class="owner-pill" id="ownerPill">Buyer View</div>
+      </header>
+
+      <div class="main-grid">
+        <nav class="category-card">
+          <h2>Categories</h2>
+          <button class="category active" data-filter="all">All Lots</button>
+          <button class="category" data-filter="Classic Washed">Classic Washed</button>
+          <button class="category" data-filter="Slow Dried Natural">Slow Dried Natural</button>
+          <button class="category" data-filter="Dual Phase Natural">Dual Phase Natural</button>
+          <button class="category" data-filter="Lalvin Yeast Natural">Lalvin Yeast Natural</button>
+          <button class="category" data-filter="Mossto Natural">Mossto Natural</button>
+          <button class="category" data-filter="Thermal Shock Natural">Thermal Shock Natural</button>
+          <button class="category" data-filter="Custom">Custom</button>
+        </nav>
+
+        <section class="list-panel" id="catalogPanel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Available / Editable Lots</p>
+              <h2>Lot Library</h2>
+            </div>
+            <button class="primary owner-only" id="addLotBtn">+ Add Lot</button>
+          </div>
+          <div id="lotList" class="lot-list"></div>
+        </section>
+
+        <section class="detail-panel" id="detailPanel">
+          <article class="hero-card" id="detailCard"></article>
+        </section>
+      </div>
+
+      <section class="library-panel hidden" id="libraryPanel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Owner Workspace</p>
+            <h2>Editable Item Library</h2>
+          </div>
+          <button class="primary" id="addLotBtn2">+ New Lot</button>
+        </div>
+        <p class="note">This GitHub Pages version saves edits in this device browser using localStorage. That is useful for personal use, but it is not true secure multi-user ownership. For real owner-only editing across devices, move this to Firebase Auth + Firestore.</p>
+        <div id="libraryRows" class="library-rows"></div>
+      </section>
+
+      <section class="about-panel hidden" id="aboutPanel">
+        <div class="about-card">
+          <p class="eyebrow">What this portal does</p>
+          <h2>Buyer-facing lot cards, owner-editable data, PDF spec sheets.</h2>
+          <p>DRIVN is a lightweight static app for presenting Driva green bean lots, processes, tasting notes, prices, and technical details. It is designed to feel like a clean learning portal: soft sand panels, navy command-room contrast, rounded cards, tactile borders, and compact lot metadata.</p>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="ownerDialog" class="modal">
+    <form method="dialog" class="modal-card" id="ownerForm">
+      <h2>Owner Mode</h2>
+      <p>Enter owner PIN to edit the library on this device.</p>
+      <input id="ownerPin" type="password" inputmode="numeric" placeholder="PIN" />
+      <div class="modal-actions">
+        <button value="cancel" class="ghost">Cancel</button>
+        <button id="unlockBtn" value="default" class="primary">Unlock</button>
+      </div>
+      <small>Default PIN: 2468. Change it in app.js before publishing.</small>
+    </form>
+  </dialog>
+
+  <dialog id="lotDialog" class="modal wide">
+    <form method="dialog" class="modal-card" id="lotForm">
+      <div class="modal-title-row">
+        <h2 id="formTitle">Add Lot</h2>
+        <button value="cancel" class="icon-btn" type="submit">×</button>
+      </div>
+      <input type="hidden" id="lotId" />
+      <div class="form-grid">
+        <label>Lot Name<input id="lotName" required /></label>
+        <label>Origin<input id="origin" required /></label>
+        <label>Region<input id="region" /></label>
+        <label>Process<select id="process"></select></label>
+        <label>Varietals<input id="varietals" /></label>
+        <label>Altitude<input id="altitude" placeholder="1600–1800 MASL" /></label>
+        <label>Farm<input id="farm" /></label>
+        <label>Producer<input id="producer" /></label>
+        <label>Price / kg<input id="price" /></label>
+        <label>Availability<select id="availability"><option>Available</option><option>Limited</option><option>Reserved</option><option>Sold Out</option><option>Coming Soon</option></select></label>
+        <label>Minimum Order<input id="moq" /></label>
+        <label>Recommended Use<input id="recommended" placeholder="Filter / Espresso" /></label>
+        <label class="full">Tasting Notes<input id="notes" /></label>
+        <label class="full">Process Details<textarea id="processDetails" rows="4"></textarea></label>
+        <label>Moisture<input id="moisture" /></label>
+        <label>Water Activity<input id="aw" /></label>
+        <label class="full">Buyer Description<textarea id="description" rows="4"></textarea></label>
+      </div>
+      <div class="modal-actions">
+        <button value="cancel" class="ghost">Cancel</button>
+        <button id="saveLotBtn" value="default" class="primary">Save Lot</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
