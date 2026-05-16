@@ -1,6 +1,6 @@
-const OWNER_PIN = '2468';
-const WHATSAPP_NUMBER = '6281220000000'; // Change to Driva WhatsApp number, no plus sign.
-const PROCESS_OPTIONS = ['Classic Washed','Slow Dried Natural','Dual Phase Natural','Lalvin Yeast Natural','Mossto Natural','Mossto Washed','Thermal Shock Natural','Custom'];
+const OWNER_PIN = '141007';
+const WHATSAPP_NUMBER = '6287774872494'; // Change to Driva WhatsApp number, no plus sign.
+const PROCESS_OPTIONS = ['Classic Washed','Slow Dried Natural','Dual Phase Natural','Lalvin Yeast Natural','Thermal Shock Natural','Custom'];
 const STORAGE_KEY = 'drivn_lots_v1';
 
 const seedLots = [
